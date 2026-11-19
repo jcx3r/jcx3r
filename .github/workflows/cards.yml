@@ -1,0 +1,122 @@
+name: Atualizar cards do README
+
+# Todo card é ARQUIVO em profile/, servido pelo jsdelivr com pino no commit.
+# Nenhum serviço desenha imagem na hora da visita. Os cards saem em inglês, como
+# o README, e na paleta preta de scripts/paleta.py.
+#
+# Nada aqui tem nome de usuário escrito à mão: conta, repositório e e-mail dos
+# commits vêm do contexto da Action. Subiu o repo, os cards saem com os dados
+# da conta dona dele.
+
+on:
+  # Roda já no primeiro push: subiu o repo, a Action gera os cards e fixa o
+  # README sozinha, sem ninguém clicar em nada. Push feito pela própria Action
+  # (com GITHUB_TOKEN) não dispara outra rodada, então não há laço.
+  push:
+    branches: ["**"]
+  schedule:
+    # A cada 6h: um card de SEQUÊNCIA precisa dizer HOJE.
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Dois pushes seguidos viram duas rodadas em fila, nunca ao mesmo tempo
+# empurrando commit uma por cima da outra.
+concurrency:
+  group: cards
+  cancel-in-progress: false
+
+jobs:
+  cards:
+    runs-on: ubuntu-latest
+    steps:
+      # Histórico inteiro: o pino é "o último commit que tocou profile/", e num
+      # clone raso o git não sabe responder isso.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Guarda das imagens
+        run: python3 scripts/pin-cards.py --verificar
+
+      # Os geradores com continue-on-error de propósito: se um cair, o arquivo
+      # anterior fica no repo e na tela, e o outro segue. Dado velho é
+      # aceitável, buraco na página não é.
+
+      # GRS_TOKEN (PAT) conta repositórios privados; sem ele os cards só veem
+      # os públicos.
+      - name: Linguagens
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GRS_TOKEN || secrets.GITHUB_TOKEN }}
+        run: python3 scripts/gerar-linguagens.py
+
+      - name: Sequência
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GRS_TOKEN || secrets.GITHUB_TOKEN }}
+        run: python3 scripts/gerar-sequencia.py
+
+      - name: Comitar os cards
+        id: cards
+        run: |
+          # Noreply da conta dona do repo, montado pela própria Action: o commit
+          # conta como contribuição dela, e nenhum e-mail pessoal fica exposto.
+          git config user.name "${{ github.repository_owner }}"
+          git config user.email "${{ github.repository_owner_id }}+${{ github.repository_owner }}@users.noreply.github.com"
+
+          git add profile/*.svg
+          if git diff --cached --quiet; then
+            echo "Nada mudou em nenhum card."
+          else
+            git commit -m "chore: atualiza cards do README"
+            git pull --rebase --quiet
+            git push
+          fi
+          # O pino é SEMPRE o último commit que tocou profile/. Com card novo é o
+          # de agora; sem card novo é o anterior. Assim um README editado que
+          # chegue com o pino zerado se conserta na próxima rodada, mesmo quando
+          # nenhum card mudou.
+          echo "sha=$(git log -1 --format=%H -- profile/)" >> "$GITHUB_OUTPUT"
+
+      # NUNCA fixar o README numa URL que o jsdelivr ainda não serve: se o camo
+      # buscar nessa janela, ele guarda a falha e o card some da página.
+      - name: Aquecer o jsdelivr
+        run: |
+          falhou=0
+          for f in profile/*.svg; do
+            url="https://cdn.jsdelivr.net/gh/${{ github.repository }}@${{ steps.cards.outputs.sha }}/$f"
+            quente=0
+            for t in 1 2 3 4 5 6 7 8; do
+              c=$(curl -s -o /dev/null -w '%{http_code}' "$url")
+              if [ "$c" = 200 ]; then
+                echo "$f: quente na tentativa $t"
+                quente=1
+                break
+              fi
+              echo "$f: tentativa $t devolveu $c"
+              sleep 10
+            done
+            if [ "$quente" = 0 ]; then
+              falhou=1
+            fi
+          done
+          if [ "$falhou" = 1 ]; then
+            echo "::error::jsdelivr não aqueceu; o README fica no pino anterior, que funciona"
+            exit 1
+          fi
+
+      - name: Fixar o README no commit dos cards
+        run: |
+          python3 scripts/pin-cards.py --fixar "${{ steps.cards.outputs.sha }}"
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "README já estava no pino certo."
+          else
+            curto=$(echo "${{ steps.cards.outputs.sha }}" | cut -c1-7)
+            git commit -m "chore: fixa os cards no commit $curto"
+            git pull --rebase --quiet
+            git push
+          fi

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="340" height="195" viewBox="0 0 340 195" role="img" aria-label="Most used languages: waiting for the first sync">
+  <title>Most used languages: waiting for the first sync</title>
+  <rect x="0.5" y="0.5" width="339" height="194" rx="8" fill="#0A0A0A" stroke="#262626"/>
+  <g font-family="'Segoe UI', Ubuntu, Helvetica, Arial, sans-serif">
+    <text x="24" y="38" font-size="15px" font-weight="700" fill="#FAFAFA">Most used languages</text>
+    <text x="24" y="101" font-size="13px" fill="#737373">First sync pending.</text>
+    <text x="24" y="121" font-size="13px" fill="#737373">This card updates every 6 hours.</text>
+  </g>
+</svg>
