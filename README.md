@@ -3,7 +3,7 @@
      scripts/pin-cards.py, chamado pela Action. Os zeros são o ponto de partida
      e a primeira rodada conserta. Nunca troque por @main nem por caminho
      relativo: o camo do GitHub mostraria a versão velha ou levaria 429. -->
-<a href="#contact"><img src="https://cdn.jsdelivr.net/gh/jcx3r/jcx3r@26114784f41f4451c4eb40c53d55f775542d0396/profile/header.svg" alt="Juan Carvalho (jcx3r), front-end developer building web apps, dashboards and landing pages" width="100%"></a>
+<a href="#contact"><img src="https://cdn.jsdelivr.net/gh/jcx3r/jcx3r@2b50cfd250c54e765d5f68c4d0780bf8a3254f4a/profile/header.svg" alt="Juan Carvalho (jcx3r), front-end developer building web apps, dashboards and landing pages" width="100%"></a>
 
 **Front-end developer** turning ideas into fast, polished products for the web. I design and build web apps, dashboards and landing pages with React, TypeScript and Tailwind CSS, from the first wireframe to the production deploy.<br>
 <sub>Desenvolvedor front-end. Commissions abertas e aberto a vagas.</sub>
@@ -103,8 +103,8 @@ My featured projects are pinned right below this page. Client work under NDA can
 
 ### GitHub activity
 
-<a href="#"><img src="https://cdn.jsdelivr.net/gh/jcx3r/jcx3r@26114784f41f4451c4eb40c53d55f775542d0396/profile/langs.svg" alt="Most used languages" height="190"></a>
-<a href="#"><img src="https://cdn.jsdelivr.net/gh/jcx3r/jcx3r@26114784f41f4451c4eb40c53d55f775542d0396/profile/sequencia.svg" alt="Contribution streak" height="190"></a>
+<a href="#"><img src="https://cdn.jsdelivr.net/gh/jcx3r/jcx3r@2b50cfd250c54e765d5f68c4d0780bf8a3254f4a/profile/langs.svg" alt="Most used languages" height="190"></a>
+<a href="#"><img src="https://cdn.jsdelivr.net/gh/jcx3r/jcx3r@2b50cfd250c54e765d5f68c4d0780bf8a3254f4a/profile/sequencia.svg" alt="Contribution streak" height="190"></a>
 
 ##
 
